@@ -1,6 +1,6 @@
-import fs from 'fs'
-
-const validWordList = retrieveValidWordList();
+import fs from 'fs';
+import path from 'path';
+import {fileURLToPath} from 'url';
 
 /* Take in an input inputWord and returns a Godot bbcode_text formatted colored string to be sent back to Godot 
 
@@ -9,7 +9,7 @@ const validWordList = retrieveValidWordList();
     @return a string with color codes that is formatted for Godot
 
 */
-function formatGuess(inputWord, hotWord) {
+export function formatGuess(inputWord, hotWord) {
     let input = inputWord.toUpperCase();
     hotWord = hotWord.toUpperCase();
 
@@ -57,19 +57,22 @@ function color(letter, color) {
 */
 
 export function checkIfvalid(word) {
+    const validWordList = retrieveValidWordList();
     return validWordList.includes(word.toUpperCase());
 }
 
 export function retrieveValidWordList() {
-    const fileName = './targets.json' // wordlist from https://github.com/lynn/hello-wordl
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+
+    const fileName = __dirname + '/targets.json' // wordlist from https://github.com/lynn/hello-wordl
     const allWords = JSON.parse(fs.readFileSync(fileName));
     return allWords.filter(word => word.length === 5 && /^[a-zA-Z]+$/.test(word)).map((word) => word.toUpperCase());
 }
 
 export function generateHotWord() {
-    const validWords = retrieveValidWordList();
-    console.log(validWords);
-    return validWords[randomInt(0, validWords.length)];
+    const validWordList = retrieveValidWordList();
+    return validWordList[randomInt(0, validWordList.length)];
 }
 
 function randomInt(min, max) {

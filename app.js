@@ -2,7 +2,7 @@ import express from "express";
 import http from "http";
 import cors from "cors";
 import { WebSocketServer } from "ws";
-import { generateHotWord, checkIfvalid } from './util/wordle';
+import { generateHotWord, checkIfvalid } from './util/wordle.js';
 
 const app = express();
 
