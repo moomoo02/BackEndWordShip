@@ -1,4 +1,4 @@
-const fs = require('fs')
+import fs from 'fs'
 
 /* Take in an input inputWord and returns a Godot bbcode_text formatted colored string to be sent back to Godot 
 
@@ -51,16 +51,13 @@ function color(letter, color) {
 
 
 /* Retrieve all words from the json file and returns an array of 5 letter capital letters strings
-
-    @params `inputWord`: the word that was "killed" and being used to guess
-            `hotWord`: the word that is the "wordle word" that the player needs to guess to win (spawner loses if this word is guessed)
-    @return a string with color codes that is formatted for Godot
+    @return array of strings that are all 5 letters long
 
 */
 export function retrieveValidWordList() {
     const fileName = './targets.json' // wordlist from https://github.com/lynn/hello-wordl
     const allWords = JSON.parse(fs.readFileSync(fileName));
-    return allWords.filter(word => word.length === 5 && /^[a-zA-Z]+$/.test(word));
+    return allWords.filter(word => word.length === 5 && /^[a-zA-Z]+$/.test(word)).map((word) => word.toUpperCase());
 }
 
 export function generateHotWord() {
