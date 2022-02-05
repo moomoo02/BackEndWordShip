@@ -1,5 +1,7 @@
 import fs from 'fs'
 
+const validWordList = retrieveValidWordList();
+
 /* Take in an input inputWord and returns a Godot bbcode_text formatted colored string to be sent back to Godot 
 
     @params `inputWord`: the word that was "killed" and being used to guess
@@ -52,8 +54,12 @@ function color(letter, color) {
 
 /* Retrieve all words from the json file and returns an array of 5 letter capital letters strings
     @return array of strings that are all 5 letters long
-
 */
+
+export function checkIfvalid(word) {
+    return validWordList.includes(word.toUpperCase());
+}
+
 export function retrieveValidWordList() {
     const fileName = './targets.json' // wordlist from https://github.com/lynn/hello-wordl
     const allWords = JSON.parse(fs.readFileSync(fileName));
