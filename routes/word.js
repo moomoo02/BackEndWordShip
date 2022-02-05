@@ -1,7 +1,6 @@
 var express = require("express");
 var router = express.Router();
 
-/* GET users listing. */
 let words = [];
 
 router.get("/", function (req, res, next) {
@@ -14,7 +13,5 @@ router.post("/", function (req, res) {
   } catch (err) {
     res.send(err);
   }
-  res.send(Object.keys(req.body)[0]);
-  //res.send(req.body);
 });
 module.exports = router;

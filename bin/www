@@ -8,6 +8,15 @@ var app = require("../app");
 var debug = require("debug")("backend:server");
 var http = require("http");
 
+var allowCrossDomain = function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+  next();
+};
+
+app.use(allowCrossDomain);
+
 /**
  * Get port from environment and store in Express.
  */
@@ -24,8 +33,14 @@ var server = http.createServer(app);
 /**
  * Listen on provided port, on all network interfaces.
  */
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+  next();
+});
+server.listen(port, () => {
+  console.log("Hi");
+});
 
-server.listen(port);
 server.on("error", onError);
 server.on("listening", onListening);
 
