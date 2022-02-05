@@ -17,9 +17,7 @@ const app = express();
 
 app.use(cors());
 
-// const io = new Server(server, {
-//   cors: { origin: "*" },
-// });
+app.use(express.json());
 
 const server = http.createServer(app);
 
@@ -41,12 +39,17 @@ app.get("/words", function (req, res, next) {
 app.post("/words", function (req, res) {
   // use checkIfvalid to check if word is valid
   try {
-    words.push(req.body);
+    if (!words.includes(req.body.input)) {
+      words.push(req.body.input);
+    } else {
+      res.send({ isValid: 0 });
+      return;
+    }
   } catch (err) {
     res.send(err);
   }
-  res.send(Object.keys(req.body)[0]);
-  //res.send(req.body);
+
+  res.send({ isValid: 1 });
 });
 
 wss.on("connection", (socket) => {
