@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import {fileURLToPath} from 'url';
+import chalk from 'chalk'
 
 /* Take in an input inputWord and returns a Godot bbcode_text formatted colored string to be sent back to Godot 
 
@@ -75,7 +76,7 @@ export function generateHotWord() {
     return validWordList[randomInt(0, validWordList.length)];
 }
 
-function randomInt(min, max) {
+export function randomInt(min, max) {
     // min and max inclusive
     return Math.floor(Math.random() * (max - min + 1) + min)
 }

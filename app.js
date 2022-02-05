@@ -2,7 +2,16 @@ import express from "express";
 import http from "http";
 import cors from "cors";
 import { WebSocketServer } from "ws";
-import { generateHotWord, checkIfvalid } from './util/wordle.js';
+import { generateHotWord, checkIfvalid, formatGuess } from './util/wordle.js';
+import {randomInt} from './util/wordle.js'
+
+export function spawnHotWord(word) {
+    const lowerSeconds = 30;
+    const upperSeconds = 60;
+    setTimeout(() => {
+        // TODO: spawn hot word
+    }, randomInt(lowerSeconds * 1000, upperSeconds * 1000))
+}
 
 const app = express();
 
@@ -41,8 +50,27 @@ app.post("/words", function (req, res) {
 });
 
 wss.on("connection", (socket) => {
+  console.log("connect");
   socket.on("message", (message) => {
-    console.log(message);
+    const messageEvent = JSON.parse(message.toString()); // Get the UTF-8 buffered data, turn to string, then turn to JS object with event and data attributes
+    const data = messageEvent.data;
+    const event = messageEvent.event;
+    console.log(messageEvent);
+    // Figure out what event was sent
+    switch (event) {
+      case 'guess':
+        // the Godot player has killed a word, so play Wordle
+        const bbEncoded = formatGuess(data, hotWord);
+
+        // send the result back to Godot
+        const payload = {
+          event: "guessResult",
+          data: bbEncoded
+        }
+        socket.send(JSON.stringify(payload));
+      default:
+        console.log("Unrecognized event: ", event)
+    }
   });
 });
 
