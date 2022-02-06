@@ -90,7 +90,9 @@ wss.on("connection", (socket) => {
           socket.send(JSON.stringify(victory))
         }
       case 'startGame':
+        // restart the game with a new hotWord and new duplicate list
         hotWord = generateHotWord();
+        words = [];
         console.log("New hot word is: ", hotWord);
       default:
         console.log("Unrecognized event: ", event);
