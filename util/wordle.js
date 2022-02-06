@@ -11,6 +11,10 @@ import chalk from 'chalk'
 
 */
 export function formatGuess(inputWord, hotWord) {
+    if (inputWord.includes("[center]")) {
+        inputWord = inputWord.replace("[center]", "");
+        inputWord = inputWord.replace("[/center]", "");
+    }
     let input = inputWord.toUpperCase();
     hotWord = hotWord.toUpperCase();
 
@@ -44,12 +48,12 @@ export function formatGuess(inputWord, hotWord) {
         }
     }
 
-    console.log(correctArr.join(''));
-    return godotArr.join('');
+    console.log("The player has guessed: ", correctArr.join(''));
+    return "[center]" + godotArr.join('') + "[/center]";
 }
 
 function color(letter, color) {
-    return `[color=${color}]${letter}[/color]`
+    return `[color=${color}]${letter} [/color]`
 }
 
 
