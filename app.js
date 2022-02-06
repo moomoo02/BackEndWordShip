@@ -40,7 +40,7 @@ app.post("/words", function (req, res) {
       words.push(req.body.input);
       // Send the spawnWord event to Godot (and other clients for now)
       wss.clients.forEach(function each(client) {
-        client.send(JSON.stringify({ event: "spawnWord", data: inputWord }));
+        client.send(JSON.stringify({ event: "spawnWord", data: inputWord.toUpperCase() }));
       });
     } else if (!isWord) {
       res.send({ code: 0 });
