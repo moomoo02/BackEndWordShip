@@ -5,13 +5,6 @@ import { WebSocketServer } from "ws";
 import { generateHotWord, checkIfvalid, formatGuess } from "./util/wordle.js";
 import { randomInt } from "./util/wordle.js";
 
-export function spawnHotWord(word) {
-  const lowerSeconds = 30;
-  const upperSeconds = 60;
-  setTimeout(() => {
-    // TODO: spawn hot word
-  }, randomInt(lowerSeconds * 1000, upperSeconds * 1000));
-}
 
 const app = express();
 
@@ -96,6 +89,7 @@ wss.on("connection", (socket) => {
       // restart the game with a new hotWord and new duplicate list
       hotWord = generateHotWord();
       words = [];
+      spawnHotWord(hotWord);
       console.log("New hot word is: ", hotWord);
     } else {
       console.log("Unrecognized event: ", event);
@@ -106,3 +100,15 @@ wss.on("connection", (socket) => {
 server.listen(process.env.PORT || 5000, () => {
   console.log("Listening on http://localhost:5000");
 });
+
+
+function spawnHotWord(word) {
+  const lowerSeconds = 30;
+  const upperSeconds = 60;
+  setTimeout(() => {
+    // TODO: spawn hot word
+    wss.clients.forEach(function each(client) {
+      client.send(JSON.stringify({ event: "hotWord", data: word }));
+    });
+  }, randomInt(lowerSeconds * 1000, upperSeconds * 1000));
+}
