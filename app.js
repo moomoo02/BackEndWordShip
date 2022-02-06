@@ -32,7 +32,7 @@ app.get("/", (req, res) => {
 let words = [];
 
 app.get("/words", function (req, res, next) {
-  // res.send(words);
+  //   res.send(words);
   res.send(hotWord);
 });
 
