@@ -45,6 +45,11 @@ app.post("/words", function (req, res) {
     let isWord = checkIfvalid(inputWord);
     if (!isDuplicate && isWord) {
       words.push(req.body.input);
+      wss.clients.forEach(function each(client) {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(JSON.stringify({ event: "spawnWord", data: inputWord }));
+        }
+      });
     } else if (!isWord) {
       res.send({ code: 0 });
       return;
