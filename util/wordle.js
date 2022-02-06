@@ -45,7 +45,7 @@ export function formatGuess(inputWord, hotWord) {
     }
 
     console.log(correctArr.join(''));
-    return godotArr.join('');
+    return "[center]" + godotArr.join('') + "[/center]";
 }
 
 function color(letter, color) {
