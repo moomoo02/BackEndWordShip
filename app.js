@@ -45,10 +45,9 @@ app.post("/words", function (req, res) {
     let isWord = checkIfvalid(inputWord);
     if (!isDuplicate && isWord) {
       words.push(req.body.input);
+      // Send the spawnWord event to Godot (and other clients for now)
       wss.clients.forEach(function each(client) {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(JSON.stringify({ event: "spawnWord", data: inputWord }));
-        }
+        client.send(JSON.stringify({ event: "spawnWord", data: inputWord }));
       });
     } else if (!isWord) {
       res.send({ code: 0 });
@@ -74,33 +73,32 @@ wss.on("connection", (socket) => {
     console.log(event);
     console.log(typeof event)
     // Figure out what event was sent
-    switch (event) {
-      case "guess":
-        // the Godot player has killed a word, so play Wordle
-        console.log(hotWord)
-        const bbEncoded = formatGuess(data, hotWord);
+    if (event === "guess") {
+      // the Godot player has killed a word, so play Wordle
+      console.log(hotWord)
+      const bbEncoded = formatGuess(data, hotWord);
 
-        // send the result back to Godot
-        const payload = {
-          event: "guessResult",
-          data: bbEncoded,
-        };
-        socket.send(JSON.stringify(payload));
-        if (data.toUpperCase() === hotWord.toUpperCase()) {
-          // Player has guessed the word
-          const victory = {
-            event: "victory",
-            data: 1
-          }
-          socket.send(JSON.stringify(victory))
+      // send the result back to Godot
+      const payload = {
+        event: "guessResult",
+        data: bbEncoded,
+      };
+      socket.send(JSON.stringify(payload));
+      if (data.toUpperCase() === hotWord.toUpperCase()) {
+        // Player has guessed the word
+        const victory = {
+          event: "victory",
+          data: 1
         }
-      case 'startGame':
-        // restart the game with a new hotWord and new duplicate list
-        hotWord = generateHotWord();
-        words = [];
-        console.log("New hot word is: ", hotWord);
-      default:
-        console.log("Unrecognized event: ", event);
+        socket.send(JSON.stringify(victory))
+      }
+    } else if (event === "startGame") {
+      // restart the game with a new hotWord and new duplicate list
+      hotWord = generateHotWord();
+      words = [];
+      console.log("New hot word is: ", hotWord);
+    } else {
+      console.log("Unrecognized event: ", event);
     }
   });
 });

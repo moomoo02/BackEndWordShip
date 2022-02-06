@@ -49,7 +49,7 @@ export function formatGuess(inputWord, hotWord) {
 }
 
 function color(letter, color) {
-    return `[color=${color}]${letter}[/color]`
+    return `[color=${color}]${letter} [/color]`
 }
 
 
