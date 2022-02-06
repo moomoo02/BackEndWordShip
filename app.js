@@ -2,15 +2,15 @@ import express from "express";
 import http from "http";
 import cors from "cors";
 import { WebSocketServer } from "ws";
-import { generateHotWord, checkIfvalid, formatGuess } from './util/wordle.js';
-import {randomInt} from './util/wordle.js'
+import { generateHotWord, checkIfvalid, formatGuess } from "./util/wordle.js";
+import { randomInt } from "./util/wordle.js";
 
 export function spawnHotWord(word) {
-    const lowerSeconds = 30;
-    const upperSeconds = 60;
-    setTimeout(() => {
-        // TODO: spawn hot word
-    }, randomInt(lowerSeconds * 1000, upperSeconds * 1000))
+  const lowerSeconds = 30;
+  const upperSeconds = 60;
+  setTimeout(() => {
+    // TODO: spawn hot word
+  }, randomInt(lowerSeconds * 1000, upperSeconds * 1000));
 }
 
 const app = express();
@@ -32,24 +32,31 @@ app.get("/", (req, res) => {
 let words = [];
 
 app.get("/words", function (req, res, next) {
-  // res.send(words);
+  //   res.send(words);
   res.send(hotWord);
 });
 
 app.post("/words", function (req, res) {
   // use checkIfvalid to check if word is valid
   try {
-    if (!words.includes(req.body.input)) {
+    console.log("POST");
+    let inputWord = req.body.input;
+    let isDuplicate = words.includes(inputWord);
+    let isWord = checkIfvalid(inputWord);
+    if (!isDuplicate && isWord) {
       words.push(req.body.input);
+    } else if (!isWord) {
+      res.send({ code: 0 });
+      return;
     } else {
-      res.send({ isValid: 0 });
+      res.send({ code: 1 });
       return;
     }
   } catch (err) {
     res.send(err);
   }
 
-  res.send({ isValid: 1 });
+  res.send({ code: 2 });
 });
 
 wss.on("connection", (socket) => {
@@ -63,7 +70,7 @@ wss.on("connection", (socket) => {
     console.log(typeof event)
     // Figure out what event was sent
     switch (event) {
-      case 'guess':
+      case "guess":
         // the Godot player has killed a word, so play Wordle
         console.log(hotWord)
         const bbEncoded = formatGuess(data, hotWord);
@@ -71,8 +78,8 @@ wss.on("connection", (socket) => {
         // send the result back to Godot
         const payload = {
           event: "guessResult",
-          data: bbEncoded
-        }
+          data: bbEncoded,
+        };
         socket.send(JSON.stringify(payload));
         if (data.toUpperCase() === hotWord.toUpperCase()) {
           // Player has guessed the word
@@ -86,7 +93,7 @@ wss.on("connection", (socket) => {
         hotWord = generateHotWord();
         console.log("New hot word is: ", hotWord);
       default:
-        console.log("Unrecognized event: ", "->"+event+"<-")
+        console.log("Unrecognized event: ", event);
     }
   });
 });
