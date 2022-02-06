@@ -71,10 +71,13 @@ wss.on("connection", (socket) => {
     const data = messageEvent.data;
     const event = messageEvent.event;
     console.log(messageEvent);
+    console.log(event);
+    console.log(typeof event)
     // Figure out what event was sent
     switch (event) {
       case "guess":
         // the Godot player has killed a word, so play Wordle
+        console.log(hotWord)
         const bbEncoded = formatGuess(data, hotWord);
 
         // send the result back to Godot
@@ -83,6 +86,19 @@ wss.on("connection", (socket) => {
           data: bbEncoded,
         };
         socket.send(JSON.stringify(payload));
+        if (data.toUpperCase() === hotWord.toUpperCase()) {
+          // Player has guessed the word
+          const victory = {
+            event: "victory",
+            data: 1
+          }
+          socket.send(JSON.stringify(victory))
+        }
+      case 'startGame':
+        // restart the game with a new hotWord and new duplicate list
+        hotWord = generateHotWord();
+        words = [];
+        console.log("New hot word is: ", hotWord);
       default:
         console.log("Unrecognized event: ", event);
     }
