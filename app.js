@@ -64,6 +64,10 @@ app.post("/words", function (req, res) {
   res.send({ code: 2 });
 });
 
+app.get("/list", function (req, res, next) {
+  res.send(words);
+});
+
 wss.on("connection", (socket) => {
   console.log("connect");
   socket.on("message", (message) => {
@@ -72,12 +76,12 @@ wss.on("connection", (socket) => {
     const event = messageEvent.event;
     console.log(messageEvent);
     console.log(event);
-    console.log(typeof event)
+    console.log(typeof event);
     // Figure out what event was sent
     switch (event) {
       case "guess":
         // the Godot player has killed a word, so play Wordle
-        console.log(hotWord)
+        console.log(hotWord);
         const bbEncoded = formatGuess(data, hotWord);
 
         // send the result back to Godot
@@ -90,11 +94,11 @@ wss.on("connection", (socket) => {
           // Player has guessed the word
           const victory = {
             event: "victory",
-            data: 1
-          }
-          socket.send(JSON.stringify(victory))
+            data: 1,
+          };
+          socket.send(JSON.stringify(victory));
         }
-      case 'startGame':
+      case "startGame":
         // restart the game with a new hotWord and new duplicate list
         hotWord = generateHotWord();
         words = [];
